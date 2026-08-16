@@ -94,13 +94,10 @@ indentation do not mix. The token list lives at the top of
 ```console
 $ git clone --recurse-submodules https://github.com/arsalan-anwari/2009scape-sphinx-theme
 $ cd 2009scape-sphinx-theme
-$ pip install -e .[docs,test]
-$ make -C docs html          # build the demo docs
-$ python -m pytest           # build-level tests
+$ uv sync --extra docs --extra test    # .venv with the theme installed editable
+$ uv run make -C docs html             # build the demo docs
+$ uv run pytest                        # build-level tests
 ```
-
-`docs/kitchen-sink/` renders every styled node type if a change breaks
-something visually, it breaks there first.
 
 Releases go out through [`publish.sh`](publish.sh), which runs the tests, uploads
 to PyPI and pushes the built docs to GitHub Pages:
@@ -110,9 +107,6 @@ $ ./publish.sh                # tests, PyPI, tag, gh-pages
 $ ./publish.sh --docs-only    # just redeploy the docs
 $ ./publish.sh --test-pypi    # dry run against TestPyPI
 ```
-
-On the first run it also switches GitHub Pages on through the `gh` CLI, so the
-repository needs no manual setup in the web UI.
 
 ## Licence
 

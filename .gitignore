@@ -5,6 +5,7 @@ build/
 dist/
 .venv/
 venv/
+uv.lock
 
 docs/_build/
 .pytest_cache/

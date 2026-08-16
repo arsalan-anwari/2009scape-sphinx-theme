@@ -94,6 +94,24 @@ need git
 need python3
 git rev-parse --git-dir >/dev/null 2>&1 || die "not a git repository: $REPO_ROOT"
 
+if command -v uv >/dev/null 2>&1; then
+    USE_UV=1
+    info "environment: uv ($(uv --version | cut -d' ' -f2))"
+else
+    USE_UV=0
+    info "environment: ambient python3 (uv not found)"
+fi
+readonly USE_UV
+
+# Run a command inside the project environment.
+inenv() {
+    if (( USE_UV )); then
+        run uv run --no-sync "$@"
+    else
+        run "$@"
+    fi
+}
+
 # Pin to this repository. Accept both SSH and HTTPS spellings of the remote.
 origin_url="$(git remote get-url origin 2>/dev/null || true)"
 [[ -n "$origin_url" ]] || die "no 'origin' remote configured"
@@ -132,6 +150,7 @@ info "version:    $VERSION"
 # plan
 
 step "Plan"
+(( USE_UV ))    && info "• sync .venv with the docs and test extras"
 (( RUN_TESTS )) && info "• run pytest"
 (( DO_PYPI ))   && info "• build and upload $PKG_NAME $VERSION to ${TWINE_REPO[*]:-PyPI}"
 (( DO_TAG ))    && info "• tag $TAG and push it to origin"
@@ -139,11 +158,23 @@ step "Plan"
 (( DO_DOCS ))   && info "• build docs and force-push them to origin/$DOCS_BRANCH"
 confirm "Proceed?" || die "aborted"
 
+# environment
+
+step "Preparing environment"
+if (( USE_UV )); then
+    run uv sync --extra docs --extra test
+elif (( ! DRY_RUN )); then
+    python3 -c 'import sphinx_2009scape_theme' 2>/dev/null || die \
+        "sphinx_2009scape_theme is not importable — install it first:
+             uv sync --extra docs --extra test    (or: pip install -e '.[docs,test]')"
+    info "using the already-installed package"
+fi
+
 # tests
 
 if (( RUN_TESTS )); then
     step "Running tests"
-    run python3 -m pytest -q
+    inenv python3 -m pytest -q
 fi
 
 # PyPI
@@ -230,7 +261,7 @@ fi
 if (( DO_DOCS )); then
     step "Building documentation"
     need make
-    run make -C "$DOCS_SRC" html
+    inenv make -C "$DOCS_SRC" html
 
     if (( ! DRY_RUN )); then
         [[ -f "$DOCS_BUILD/index.html" ]] \
