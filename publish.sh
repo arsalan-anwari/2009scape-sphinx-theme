@@ -5,14 +5,12 @@
 #   1. run the test suite
 #   2. build sdist + wheel and upload them to PyPI
 #   3. tag the release
-#   4. build the demo docs and push them to the gh-pages branch
-#
-# Credentials come from ~/.pypirc or the TWINE_USERNAME / TWINE_PASSWORD
-# environment variables (use `__token__` plus a PyPI API token).
+#   4. create a GitHub release for the tag, with the distributions attached
+#   5. build the demo docs and push them to the gh-pages branch
 #
 # Usage:
 #   ./publish.sh [--pypi-only | --docs-only] [--test-pypi] [--skip-tests]
-#                [--no-tag] [--dry-run] [--yes]
+#                [--no-tag] [--no-release] [--dry-run] [--yes]
 
 set -Eeuo pipefail
 
@@ -32,6 +30,7 @@ DO_PYPI=1
 DO_DOCS=1
 RUN_TESTS=1
 DO_TAG=1
+DO_RELEASE=1
 DRY_RUN=0
 ASSUME_YES=0
 TWINE_REPO=()
@@ -69,10 +68,11 @@ confirm() {
 while (( $# )); do
     case "$1" in
         --pypi-only)  DO_DOCS=0 ;;
-        --docs-only)  DO_PYPI=0; DO_TAG=0 ;;
-        --test-pypi)  TWINE_REPO=(--repository testpypi); DO_TAG=0 ;;
+        --docs-only)  DO_PYPI=0; DO_TAG=0; DO_RELEASE=0 ;;
+        --test-pypi)  TWINE_REPO=(--repository testpypi); DO_TAG=0; DO_RELEASE=0 ;;
         --skip-tests) RUN_TESTS=0 ;;
-        --no-tag)     DO_TAG=0 ;;
+        --no-tag)     DO_TAG=0; DO_RELEASE=0 ;;
+        --no-release) DO_RELEASE=0 ;;
         --dry-run)    DRY_RUN=1 ;;
         -y|--yes)     ASSUME_YES=1 ;;
         -h|--help)    awk 'NR>1 && /^#/ {sub(/^# ?/, ""); print; next} NR>1 {exit}' \
@@ -135,6 +135,7 @@ step "Plan"
 (( RUN_TESTS )) && info "• run pytest"
 (( DO_PYPI ))   && info "• build and upload $PKG_NAME $VERSION to ${TWINE_REPO[*]:-PyPI}"
 (( DO_TAG ))    && info "• tag $TAG and push it to origin"
+(( DO_RELEASE )) && info "• create GitHub release $TAG"
 (( DO_DOCS ))   && info "• build docs and force-push them to origin/$DOCS_BRANCH"
 confirm "Proceed?" || die "aborted"
 
@@ -191,6 +192,37 @@ if (( DO_TAG )); then
     step "Tagging $TAG"
     run git tag -a "$TAG" -m "$PKG_NAME $VERSION"
     run git push origin "$TAG"
+fi
+
+# GitHub release
+
+if (( DO_RELEASE )); then
+    step "Creating GitHub release $TAG"
+
+    # Ship the same artefacts that went to PyPI, when we built them.
+    assets=()
+    if (( DO_PYPI )); then
+        shopt -s nullglob
+        assets=(dist/*)
+        shopt -u nullglob
+    fi
+
+    release_url="https://github.com/$EXPECTED_REPO/releases/tag/$TAG"
+
+    if ! command -v gh >/dev/null 2>&1; then
+        warn "gh CLI not found — create the release manually:"
+        info "https://github.com/$EXPECTED_REPO/releases/new?tag=$TAG"
+    elif ! gh auth status >/dev/null 2>&1; then
+        warn "gh is not authenticated — run 'gh auth login', then:"
+        info "gh release create $TAG dist/* --title '$PKG_NAME $VERSION' --generate-notes"
+    elif (( ! DRY_RUN )) && gh release view "$TAG" >/dev/null 2>&1; then
+        info "release $TAG already exists — skipping"
+        info "$release_url"
+    else
+        run gh release create "$TAG" ${assets[@]+"${assets[@]}"} \
+            --title "$PKG_NAME $VERSION" --generate-notes
+        (( DRY_RUN )) || info "$release_url"
+    fi
 fi
 
 # gh-pages
@@ -273,6 +305,7 @@ if (( DO_DOCS )); then
 fi
 
 step "Done"
-(( DO_PYPI )) && info "https://pypi.org/project/$PKG_NAME/$VERSION/"
-(( DO_DOCS )) && info "$PAGES_URL"
+(( DO_PYPI ))    && info "https://pypi.org/project/$PKG_NAME/$VERSION/"
+(( DO_RELEASE )) && info "https://github.com/$EXPECTED_REPO/releases/tag/$TAG"
+(( DO_DOCS ))    && info "$PAGES_URL"
 exit 0
