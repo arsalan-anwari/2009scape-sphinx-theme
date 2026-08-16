@@ -182,7 +182,14 @@ fi
 if (( DO_PYPI )); then
     step "Building distributions"
     python3 -c 'import build' 2>/dev/null || die "missing 'build' — pip install build"
-    need twine
+    
+    if (( USE_UV )); then
+        TWINE=(uvx twine)
+    else
+        need twine
+        TWINE=(twine)
+    fi
+    readonly TWINE
 
     if (( DO_TAG )) && git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
         die "tag $TAG already exists — bump the version in pyproject.toml"
@@ -193,16 +200,16 @@ if (( DO_PYPI )); then
 
     step "Checking distributions"
     if (( DRY_RUN )); then
-        printf '    %s$ twine check dist/*%s\n' "$C_DIM" "$C_RESET"
+        printf '    %s$ %s check dist/*%s\n' "$C_DIM" "${TWINE[*]}" "$C_RESET"
     else
         check_out=""
-        if ! check_out="$(twine check dist/* 2>&1)"; then
+        if ! check_out="$("${TWINE[@]}" check dist/* 2>&1)"; then
             printf '%s\n' "$check_out"
 
             squashed="$(printf '%s' "$check_out" | tr -s '[:space:]' ' ')"
             if [[ "$squashed" == *"not a valid metadata version"* ]]; then
                 warn "this is a stale local 'packaging', not a bad distribution"
-                info "fix with: pip install --upgrade 'packaging>=25.1' twine"
+                info "fix with: install uv, or pip install --upgrade packaging twine"
                 confirm "Upload anyway?" || die "aborted"
             else
                 die "twine check failed"
@@ -214,7 +221,7 @@ if (( DO_PYPI )); then
 
     step "Uploading to ${TWINE_REPO[*]:-PyPI}"
     confirm "Upload $PKG_NAME $VERSION? This cannot be undone." || die "aborted"
-    run twine upload "${TWINE_REPO[@]}" dist/*
+    run "${TWINE[@]}" upload "${TWINE_REPO[@]}" dist/*
 fi
 
 # tag
