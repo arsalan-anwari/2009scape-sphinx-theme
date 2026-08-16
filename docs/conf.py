@@ -10,7 +10,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 project = "2009scape Sphinx Theme"
 copyright = "2026, Arsalan Anwari"
 author = "Arsalan Anwari"
-release = "1.0.0"
+release = "1.0.1"
 
 extensions = [
     "sphinx.ext.autodoc",
