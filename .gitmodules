@@ -1,0 +1,3 @@
+[submodule "vendor/runescapecn"]
+	path = vendor/runescapecn
+	url = https://github.com/alns0dev/runescapecn.git

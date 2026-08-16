@@ -1,0 +1,30 @@
+<footer class="rs-footer" role="contentinfo">
+  <div class="rs-footer__inner">
+    <div class="rs-footer__meta">
+      {%- if show_copyright and copyright %}
+      {%- if copyright is iterable and copyright is not string %}
+      {%- for copyright_line in copyright %}
+      &#169; {{ _('Copyright') }} {{ copyright_line|e }}.{% if not loop.last %}<br/>{% endif %}
+      {%- endfor %}
+      {%- else %}
+      &#169; {{ _('Copyright') }} {{ copyright|e }}.
+      {%- endif %}
+      {%- endif %}
+      {%- if last_updated %}
+      {% trans last_updated=last_updated|e %}Last updated on {{ last_updated }}.{% endtrans %}
+      {%- endif %}
+    </div>
+
+    <div class="rs-footer__built">
+      {%- if show_sphinx %}
+      {% trans sphinx_version=sphinx_version|e %}Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> {{ sphinx_version }}.{% endtrans %}
+      {%- endif %}
+      {{ _('Theme') }}
+      <a href="https://github.com/arsalan-anwari/2009scape-sphinx-theme">2009scape</a>.
+    </div>
+
+    {%- if theme_footer_note %}
+    <p class="rs-footer__note">{{ theme_footer_note }}</p>
+    {%- endif %}
+  </div>
+</footer>

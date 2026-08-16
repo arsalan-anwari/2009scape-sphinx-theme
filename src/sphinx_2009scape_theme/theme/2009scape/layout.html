@@ -1,0 +1,71 @@
+{%- extends "basic/layout.html" %}
+
+{%- set rs_brand = theme_logo_text or docstitle or shorttitle or project %}
+{%- set rs_show_toc = theme_show_toc|tobool and display_toc and pagename != 'search' %}
+{%- set rs_show_sidebar = sidebars != [] and not embedded %}
+
+{%- block body_tag %}
+<body class="rs-body"
+      data-rs-scanlines="{{ 'true' if theme_scanlines|tobool else 'false' }}"
+      data-rs-pixelated-images="{{ 'true' if theme_pixelated_images|tobool else 'false' }}"
+      data-rs-search-shortcut="{{ 'true' if theme_enable_search_shortcuts|tobool else 'false' }}">
+{%- endblock %}
+
+{%- block extrahead %}
+  {%- if rs_css_overrides %}
+  <style>
+  :root {
+{{ rs_css_overrides }}
+  }
+  </style>
+  {%- endif %}
+  {{ super() }}
+{%- endblock %}
+
+{%- block header %}
+<a class="rs-skip-link" href="#rs-main">{{ _('Skip to content') }}</a>
+{%- if theme_announcement %}
+<div class="rs-announcement" role="note">{{ theme_announcement }}</div>
+{%- endif %}
+{%- include "components/header.html" %}
+{%- endblock %}
+
+{%- block relbar1 %}{% endblock %}
+{%- block relbar2 %}{% endblock %}
+
+{%- block content %}
+<div class="rs-page{{ '' if rs_show_sidebar else ' rs-page--no-sidebar' }}{{ '' if rs_show_toc else ' rs-page--no-toc' }}">
+  {%- if rs_show_sidebar %}
+  <div class="rs-sidebar-backdrop"></div>
+  <aside class="rs-sidebar" id="rs-sidebar" role="navigation" aria-label="{{ _('Main navigation') }}">
+    {%- for sidebartemplate in sidebars %}
+    {%- include sidebartemplate %}
+    {%- endfor %}
+  </aside>
+  {%- endif %}
+
+  <main class="rs-main" id="rs-main">
+    <article class="rs-content" role="main">
+      {%- block rs_content_header %}{% endblock %}
+      {% block body %}{% endblock %}
+      {%- block rs_content_footer %}{% endblock %}
+    </article>
+  </main>
+
+  {%- if rs_show_toc %}
+  <aside class="rs-toc" aria-label="{{ theme_toc_title }}">
+    <p class="rs-toc__title">{{ theme_toc_title }}</p>
+    {{ toc }}
+  </aside>
+  {%- endif %}
+</div>
+{%- endblock %}
+
+{%- block footer %}
+{%- include "components/footer.html" %}
+{%- if theme_back_to_top|tobool %}
+<button class="rs-btn-stone rs-back-to-top" type="button" aria-label="{{ _('Back to top') }}">
+  ▲ {{ _('Top') }}
+</button>
+{%- endif %}
+{%- endblock %}

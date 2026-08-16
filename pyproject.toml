@@ -1,0 +1,46 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "sphinx-2009scape-theme"
+version = "1.0.0"
+description = "A Sphinx theme with the look and feel of 2009-era RuneScape, inspired by the runescapecn shadcn registry."
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.10"
+authors = [{ name = "Arsalan Anwari", email = "arsalan@anwari.nl" }]
+keywords = ["sphinx", "theme", "documentation", "runescape", "2009scape", "shadcn"]
+classifiers = [
+    "Framework :: Sphinx",
+    "Framework :: Sphinx :: Theme",
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Topic :: Documentation :: Sphinx",
+]
+dependencies = [
+    "sphinx>=7.3",
+    "pygments>=2.14",
+]
+
+[project.optional-dependencies]
+docs = ["sphinx-design"]
+test = ["pytest"]
+
+[project.urls]
+Homepage = "https://github.com/arsalan-anwari/2009scape-sphinx-theme"
+Source = "https://github.com/arsalan-anwari/2009scape-sphinx-theme"
+
+[project.entry-points."sphinx.html_themes"]
+"2009scape" = "sphinx_2009scape_theme"
+
+[project.entry-points."pygments.styles"]
+"2009scape" = "sphinx_2009scape_theme.highlighting:Scape2009Style"
+"2009scape-light" = "sphinx_2009scape_theme.highlighting:Scape2009LightStyle"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/sphinx_2009scape_theme"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src", "docs", "README.md", "LICENSE"]

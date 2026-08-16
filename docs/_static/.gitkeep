@@ -1,0 +1,1 @@
+# Keeps `html_static_path = ["_static"]` valid in a fresh clone.

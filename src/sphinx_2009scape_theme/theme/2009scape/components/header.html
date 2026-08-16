@@ -1,0 +1,59 @@
+{%- set rs_brand = theme_logo_text or docstitle or shorttitle or project %}
+<header class="rs-header">
+  <div class="rs-header__inner">
+    <div class="rs-header__left">
+      <button class="rs-toggle" type="button" data-rs-toggle="sidebar"
+              aria-controls="rs-sidebar" aria-expanded="false"
+              aria-label="{{ _('Toggle navigation') }}">
+        <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+          <path d="M1 3h14v2H1zM1 7h14v2H1zM1 11h14v2H1z"/>
+        </svg>
+      </button>
+
+      <a class="rs-brand" href="{{ pathto(root_doc)|e }}">
+        {%- if logo_url %}
+        <img class="rs-brand__logo" src="{{ logo_url|e }}" alt="{{ logo_alt|default(docstitle, true)|e }}"/>
+        {%- endif %}
+        <span class="rs-brand__text">{{ rs_brand }}</span>
+      </a>
+
+      {%- if theme_logo_subtitle %}
+      <span class="rs-brand__subtitle">{{ theme_logo_subtitle }}</span>
+      {%- endif %}
+    </div>
+
+    <div class="rs-header__right">
+      <nav class="rs-header__nav" aria-label="{{ _('Site links') }}">
+        {%- if theme_nav_links and theme_nav_links is not string %}
+        {%- for link in theme_nav_links %}
+        <a href="{{ pathto(link.doc)|e if link.doc else link.url }}">{{ link.title }}</a>
+        {%- endfor %}
+        {%- endif %}
+        {%- if hasdoc('genindex') %}
+        <a href="{{ pathto('genindex')|e }}">{{ _('Index') }}</a>
+        {%- endif %}
+        {%- if hasdoc('search') %}
+        <a href="{{ pathto('search')|e }}">{{ _('Search') }}</a>
+        {%- endif %}
+      </nav>
+
+      {%- if theme_discord_url %}
+      <a class="rs-icon-link" href="{{ theme_discord_url }}" rel="noopener noreferrer"
+         target="_blank" aria-label="Discord">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.3.5c1.6.4 2.9 1 4.1 1.9a13.9 13.9 0 0 0-11-.6l-.5.2c.5-.2 1-.4 1.6-.6l.5-.2c.5-.1 1-.3 1.6-.4L11 3a19.8 19.8 0 0 0-4.9 1.4C2.8 9.3 1.9 14 2.4 18.7a19.9 19.9 0 0 0 6 3l1.2-1.9c-.7-.2-1.3-.5-1.9-.9l.4-.3a14.2 14.2 0 0 0 12.1 0l.4.3c-.6.4-1.2.7-1.9 1l1.2 1.8a19.9 19.9 0 0 0 6-3c.6-5.5-.9-10.2-3.6-14.3ZM9 15.3c-1.2 0-2.1-1-2.1-2.3s1-2.3 2.1-2.3c1.2 0 2.2 1 2.1 2.3 0 1.2-.9 2.3-2.1 2.3Zm6.9 0c-1.2 0-2.1-1-2.1-2.3s.9-2.3 2.1-2.3 2.2 1 2.1 2.3c0 1.2-.9 2.3-2.1 2.3Z"/>
+        </svg>
+      </a>
+      {%- endif %}
+
+      {%- if theme_github_url %}
+      <a class="rs-icon-link" href="{{ theme_github_url }}" rel="noopener noreferrer"
+         target="_blank" aria-label="GitHub">
+        <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+          <path d="M8 0C3.6 0 0 3.6 0 8c0 3.5 2.3 6.5 5.5 7.6.4.1.5-.2.5-.4v-1.4c-2.2.5-2.7-1-2.7-1-.4-1-.9-1.2-.9-1.2-.7-.5.1-.5.1-.5.8.1 1.2.8 1.2.8.7 1.2 1.9.9 2.4.7.1-.5.3-.9.5-1.1-1.8-.2-3.6-.9-3.6-3.9 0-.9.3-1.6.8-2.1-.1-.2-.4-1 .1-2.1 0 0 .7-.2 2.2.8a7.6 7.6 0 0 1 4 0c1.5-1 2.2-.8 2.2-.8.5 1.1.2 1.9.1 2.1.5.5.8 1.2.8 2.1 0 3-1.8 3.7-3.6 3.9.3.3.6.8.6 1.6v2.3c0 .2.1.5.6.4A8 8 0 0 0 8 0Z"/>
+        </svg>
+      </a>
+      {%- endif %}
+    </div>
+  </div>
+</header>

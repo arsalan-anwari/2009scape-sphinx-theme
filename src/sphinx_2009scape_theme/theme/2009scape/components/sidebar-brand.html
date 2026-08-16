@@ -1,0 +1,13 @@
+{%- if theme_logo_subtitle or logo_url %}
+<div class="rs-sidebar__section rs-sidebar__brand">
+  <a class="rs-brand" href="{{ pathto(root_doc)|e }}">
+    {%- if logo_url %}
+    <img class="rs-brand__logo" src="{{ logo_url|e }}" alt="{{ logo_alt|default(docstitle, true)|e }}"/>
+    {%- endif %}
+    <span class="rs-brand__text">{{ theme_logo_text or docstitle or project }}</span>
+  </a>
+  {%- if theme_logo_subtitle %}
+  <p class="rs-brand__subtitle">{{ theme_logo_subtitle }}</p>
+  {%- endif %}
+</div>
+{%- endif %}

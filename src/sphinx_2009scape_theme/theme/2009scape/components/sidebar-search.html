@@ -1,0 +1,10 @@
+{%- if pagename != "search" and builder != "singlehtml" %}
+<search class="rs-search rs-sidebar__section" role="search">
+  <form action="{{ pathto('search') }}" method="get">
+    <label class="rs-visually-hidden" for="rs-search-input">{{ _('Search') }}</label>
+    <input id="rs-search-input" type="text" name="q" placeholder="{{ _('Search docs') }}"
+           autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+    <button class="rs-btn" type="submit">{{ _('Go') }}</button>
+  </form>
+</search>
+{%- endif %}

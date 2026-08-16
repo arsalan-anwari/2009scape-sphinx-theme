@@ -1,0 +1,48 @@
+{%- extends "layout.html" %}
+
+{%- block rs_content_header %}
+{%- if theme_show_breadcrumbs|tobool and pagename != root_doc %}
+<nav aria-label="{{ _('Breadcrumbs') }}">
+  <ol class="rs-breadcrumbs">
+    <li><a href="{{ pathto(root_doc)|e }}">{{ shorttitle|e or _('Home') }}</a></li>
+    {%- for parent in parents %}
+    <li><a href="{{ parent.link|e }}">{{ parent.title }}</a></li>
+    {%- endfor %}
+    <li><span class="rs-breadcrumbs__current">{{ title|striptags|e }}</span></li>
+  </ol>
+</nav>
+{%- endif %}
+{%- endblock %}
+
+{% block body %}{{ body }}{% endblock %}
+
+{%- block rs_content_footer %}
+{%- set rs_show_source = theme_show_source_link|tobool and show_source and has_source and sourcename %}
+{%- if rs_show_source or rs_edit_page_url %}
+<div class="rs-page-meta">
+  {%- if rs_edit_page_url %}
+  <a href="{{ rs_edit_page_url }}" rel="nofollow noopener" target="_blank">{{ _('Edit this page') }}</a>
+  {%- endif %}
+  {%- if rs_show_source %}
+  <a href="{{ pathto('_sources/' + sourcename, true)|e }}" rel="nofollow">{{ _('Show source') }}</a>
+  {%- endif %}
+</div>
+{%- endif %}
+
+{%- if theme_show_prev_next|tobool and (prev or next) %}
+<nav class="rs-page-nav" aria-label="{{ _('Page navigation') }}">
+  {%- if prev %}
+  <a class="rs-page-nav__link rs-page-nav__link--prev" href="{{ prev.link|e }}" rel="prev">
+    <span class="rs-page-nav__label">« {{ _('Previous') }}</span>
+    <span class="rs-page-nav__title">{{ prev.title|striptags }}</span>
+  </a>
+  {%- endif %}
+  {%- if next %}
+  <a class="rs-page-nav__link rs-page-nav__link--next" href="{{ next.link|e }}" rel="next">
+    <span class="rs-page-nav__label">{{ _('Next') }} »</span>
+    <span class="rs-page-nav__title">{{ next.title|striptags }}</span>
+  </a>
+  {%- endif %}
+</nav>
+{%- endif %}
+{%- endblock %}

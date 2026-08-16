@@ -1,0 +1,57 @@
+[theme]
+inherit = "basic"
+stylesheets = [
+    "css/fonts.css",
+    "css/2009scape.css",
+    "css/layout.css",
+    "css/content.css",
+]
+sidebars = [
+    "components/sidebar-brand.html",
+    "components/sidebar-search.html",
+    "components/sidebar-nav.html",
+]
+# Referenced by dotted path so highlighting works even when the package is
+# used straight from a checkout, without entry points being installed.
+pygments_style = { default = "sphinx_2009scape_theme.highlighting.Scape2009Style" }
+
+[options]
+# --- branding -----------------------------------------------------------
+logo_text = ""
+logo_subtitle = ""
+announcement = ""
+footer_note = ""
+
+# --- navigation ---------------------------------------------------------
+github_url = ""
+discord_url = ""
+nav_links = ""
+show_breadcrumbs = "true"
+show_prev_next = "true"
+show_toc = "true"
+toc_title = "On this page"
+show_source_link = "true"
+back_to_top = "true"
+
+# --- "edit this page" ---------------------------------------------------
+source_repository = ""
+source_branch = "main"
+source_directory = ""
+
+# --- global toc ---------------------------------------------------------
+globaltoc_collapse = "false"
+globaltoc_includehidden = "true"
+globaltoc_maxdepth = "3"
+
+# --- typography ---------------------------------------------------------
+# One of: rs, rs-bold, rs-quill, rs-quill-caps, rs-surok, rs-barbarian,
+# rs-fairy, system -- or any raw CSS font stack.
+body_font = ""
+heading_font = ""
+mono_font = ""
+base_font_size = ""
+
+# --- surface treatment --------------------------------------------------
+scanlines = "true"
+pixelated_images = "false"
+css_variables = ""
