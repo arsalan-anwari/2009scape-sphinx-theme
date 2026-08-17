@@ -4,6 +4,11 @@
 {%- set rs_show_toc = theme_show_toc|tobool and display_toc and pagename != 'search' %}
 {%- set rs_show_sidebar = sidebars != [] and not embedded %}
 
+{%- block htmltitle %}
+{%- set rs_titlesuffix = (" | " + docstitle|e) if docstitle else "" %}
+<title>{{ title|striptags|e }}{{ rs_titlesuffix }}</title>
+{%- endblock %}
+
 {%- block body_tag %}
 <body class="rs-body"
       data-rs-scanlines="{{ 'true' if theme_scanlines|tobool else 'false' }}"

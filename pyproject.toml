@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "sphinx-2009scape-theme"
-version = "1.0.1"
+version = "1.0.2"
 description = "A Sphinx theme with the look and feel of 2009-era RuneScape, inspired by the runescapecn shadcn registry."
 readme = "README.md"
 license = { file = "LICENSE" }
