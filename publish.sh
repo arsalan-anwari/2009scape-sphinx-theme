@@ -181,22 +181,26 @@ fi
 
 if (( DO_PYPI )); then
     step "Building distributions"
-    python3 -c 'import build' 2>/dev/null || die "missing 'build' — pip install build"
-    
+
+    # uv builds sdist+wheel itself; without it we fall back to PyPA 'build'.
     if (( USE_UV )); then
+        BUILD=(uv build)
         TWINE=(uvx twine)
     else
+        python3 -c 'import build' 2>/dev/null \
+            || die "missing 'build' — pip install build (or install uv)"
+        BUILD=(python3 -m build)
         need twine
         TWINE=(twine)
     fi
-    readonly TWINE
+    readonly BUILD TWINE
 
     if (( DO_TAG )) && git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
         die "tag $TAG already exists — bump the version in pyproject.toml"
     fi
 
     run rm -rf dist
-    run python3 -m build
+    run "${BUILD[@]}"
 
     step "Checking distributions"
     if (( DRY_RUN )); then
